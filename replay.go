@@ -14,15 +14,21 @@ import (
 )
 
 func readCommandLineParams() (string, string, string) {
+	var baseURL string
 	var logFilePath string
 	var dryRun string
 	var withTimestamp string
 
+	flag.StringVar(&baseURL, "base-url", "uninitialized", "Denotes the host name to which requests will be replayed. Eg: https://website.com / 1.1.1.1")
 	flag.StringVar(&logFilePath, "file", "uninitialized", "Denotes the path at which the log file is present. Eg: /var/log/nginx/access.log")
 	flag.StringVar(&dryRun, "dry-run", "uninitialized", "Denotes whether it's a dry run or not")
 	flag.StringVar(&withTimestamp, "with-timestamp", "uninitialized", "Denotes whether we need to send the UNIX timestamp along with the URL")
 
 	flag.Parse()
+
+	if baseURL == "uninitialized" {
+		log.Fatalln("Please supply the baseURL (with http/https) as a parameter. Eg: ./replay --base-url=https://website.com")
+	}
 
 	if logFilePath == "uninitialized" {
 		log.Fatalln("Please supply the path of the log file as a parameter. Eg: ./replay --file=/var/log/nginx/access.log")
@@ -81,9 +87,7 @@ func getTimestampFromLogLine(logLine string) int64 {
 
 func main() {
 
-	baseURL := "https://domain.com"
-
-	logFilePath, dryRun, withTimestamp := readCommandLineParams()
+	baseURL, logFilePath, dryRun, withTimestamp := readCommandLineParams()
 
 	successPtr, err := os.OpenFile("succeeded.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0600)
 	if err != nil {
