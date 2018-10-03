@@ -23,7 +23,7 @@ func InitializeConfig() (*Config, error) {
 
 	flag.StringVar(&dryRun, "dry-run", "uninitialized", "Denotes whether it's a dry run or not")
 	flag.StringVar(&baseURL, "base-url", "uninitialized", "Denotes the host name to which requests will be replayed. Eg: https://website.com / 1.1.1.1")
-	flag.StringVar(&logFilePath, "file", "uninitialized", "Denotes the path at which the log file is present. Eg: /var/log/nginx/access.log")
+	flag.StringVar(&logFilePath, "log-file-path", "uninitialized", "Denotes the path at which the log file is present. Eg: /var/log/nginx/access.log")
 	flag.StringVar(&includeTimeStamp, "include-timestamp", "uninitialized", "Denotes whether we need to send the UNIX timestamp along with the URL")
 
 	flag.Parse()
@@ -33,7 +33,7 @@ func InitializeConfig() (*Config, error) {
 	}
 
 	if logFilePath == "uninitialized" {
-		return nil, errors.New("Please supply the path of the log file as a parameter. Eg: ./replay --file=/var/log/nginx/access.log")
+		return nil, errors.New("Please supply the path of the log file as a parameter. Eg: ./replay --log-file-path=/var/log/nginx/access.log")
 	}
 
 	if dryRun == "uninitialized" {
