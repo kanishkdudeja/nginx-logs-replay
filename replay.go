@@ -46,7 +46,7 @@ func readCommandLineParams() (string, string, string) {
 		log.Fatalln("The with-timestamp parameter can only have a value of true/false. Eg: ./replay --with-timestamp=true/false")
 	}
 
-	return logFilePath, dryRun, withTimestamp
+	return baseURL, logFilePath, dryRun, withTimestamp
 }
 
 func fireGetRequestToURL(url string) (bool, int, error) {
