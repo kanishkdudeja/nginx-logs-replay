@@ -13,7 +13,7 @@ import (
 	"time"
 )
 
-func readCommandLineParams() (string, string, string) {
+func readCommandLineParams() (string, string, string, string) {
 	var baseURL string
 	var logFilePath string
 	var dryRun string
