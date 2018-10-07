@@ -1,5 +1,10 @@
-// Package config provides configuration variables for the application
-// Values of these variables depend on the environment in which the code is being run right now
+/*
+Package config provides configuration variables
+for the application.
+
+Values of these variables depend on the environment in
+which the code is being run right now
+*/
 package config
 
 import (
@@ -7,6 +12,7 @@ import (
 	"flag"
 )
 
+// Config Struct representing the config
 type Config struct {
 	DryRun           bool   `json:"dry_run"`
 	BaseURL          string `json:"base_url"`
@@ -14,7 +20,8 @@ type Config struct {
 	IncludeTimeStamp bool   `json:"include_time_stamp"`
 }
 
-// The InitializeConfig() function returns the command line flags and calls the config package to load up the configuration
+// InitializeConfig Returns the command line flags
+// and calls the config package to load up the configuration
 func InitializeConfig() (*Config, error) {
 	var dryRun string
 	var baseURL string
