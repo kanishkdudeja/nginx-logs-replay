@@ -5,7 +5,7 @@ import (
 	"net/url"
 )
 
-// ValidateBaseURL() validates if the BaseURL (provided as a
+// ValidateBaseURL validates if the BaseURL (provided as a
 // part of the configuration) is valid or not.
 //
 // To check if it's valid, it makes sure that it contains either http:// or https://
