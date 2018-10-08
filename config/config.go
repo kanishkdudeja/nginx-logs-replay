@@ -10,6 +10,8 @@ package config
 import (
 	"errors"
 	"flag"
+
+	"../utils"
 )
 
 // Config Struct representing the config
@@ -41,6 +43,12 @@ func InitializeConfig() (*Config, error) {
 
 	if logFilePath == "uninitialized" {
 		return nil, errors.New("Please supply the path of the log file as a parameter. Eg: ./replay --log-file-path=/var/log/nginx/access.log")
+	}
+
+	err := utils.ValidateBaseURL(baseURL)
+
+	if err != nil {
+		return nil, err
 	}
 
 	var configObj Config
