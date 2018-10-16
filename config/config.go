@@ -38,6 +38,7 @@ func InitializeConfig() *Config {
 	var regexFilter string
 	var regexExclude string
 	var includeTimeStamp bool
+	var regexpFilter, regexpExclude *regexp.Regexp
 
 	flag.BoolVar(&help, "help", false, "Prints the usage string for the program")
 	flag.BoolVar(&dryRun, "dry-run", false, "Denotes whether it's a dry run or not")
@@ -81,8 +82,6 @@ func InitializeConfig() *Config {
 		printError("You can only use one of the --regex-filter and --regex-exclude parameters at once.")
 		return nil
 	}
-
-	var regexpFilter, regexpExclude *regexp.Regexp
 
 	if regexFilter != "" {
 		regexpFilter, err = utils.CompileRegularExpression(regexFilter)
