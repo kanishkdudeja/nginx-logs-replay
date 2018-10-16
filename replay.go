@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"errors"
+	"flag"
 	"fmt"
 	"log"
 	"net/http"
@@ -55,6 +56,7 @@ func main() {
 	config, err := config.InitializeConfig()
 
 	if err != nil {
+		flag.Usage()
 		log.Fatal(err)
 	}
 
