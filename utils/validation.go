@@ -3,6 +3,7 @@ package utils
 import (
 	"errors"
 	"net/url"
+	"regexp"
 )
 
 // ValidateBaseURL validates if the BaseURL (provided as a
@@ -26,4 +27,12 @@ func ValidateBaseURL(baseURL string) error {
 	}
 
 	return nil
+}
+
+// ValidateRegularExpression validates if the provided regular expression
+// is valid or not.
+func ValidateRegularExpression(regularExpression string) error {
+	_, err := regexp.Compile(regularExpression)
+
+	return err
 }

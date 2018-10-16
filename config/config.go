@@ -74,6 +74,22 @@ func InitializeConfig() *Config {
 		return nil
 	}
 
+	err = utils.ValidateRegularExpression(regexFilter)
+
+	if err != nil {
+		printError("Encountered error in compiling regular expression passed in the --regex-filter parameter")
+		printError(err.Error())
+		return nil
+	}
+
+	err = utils.ValidateRegularExpression(regexExclude)
+
+	if err != nil {
+		printError("Encountered error in compiling regular expression passed in the --regex-exclude parameter")
+		printError(err.Error())
+		return nil
+	}
+
 	if regexFilter != "" && regexExclude != "" {
 		printError("You can only use one of the --regex-filter and --regex-exclude parameters at once.")
 		return nil
