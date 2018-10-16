@@ -8,8 +8,9 @@ which the code is being run right now
 package config
 
 import (
-	"errors"
 	"flag"
+	"fmt"
+	"os"
 
 	"../utils"
 )
@@ -24,31 +25,47 @@ type Config struct {
 
 // InitializeConfig Returns the command line flags
 // and calls the config package to load up the configuration
-func InitializeConfig() (*Config, error) {
+func InitializeConfig() *Config {
+	var help bool
 	var dryRun bool
 	var baseURL string
 	var logFilePath string
 	var includeTimeStamp bool
 
+	flag.BoolVar(&help, "help", false, "Prints the usage string for the program")
 	flag.BoolVar(&dryRun, "dry-run", false, "Denotes whether it's a dry run or not")
-	flag.StringVar(&baseURL, "base-url", "uninitialized", "Denotes the host name to which requests will be replayed. Eg: https://website.com / 1.1.1.1")
-	flag.StringVar(&logFilePath, "log-file-path", "uninitialized", "Denotes the path at which the log file is present. Eg: /var/log/nginx/access.log")
+	flag.StringVar(&baseURL, "base-url", "", "Denotes the host name to which requests will be replayed. Eg: https://website.com / 1.1.1.1")
+	flag.StringVar(&logFilePath, "log-file-path", "", "Denotes the path at which the log file is present. Eg: /var/log/nginx/access.log")
 	flag.BoolVar(&includeTimeStamp, "include-timestamp", false, "Denotes whether we need to send the UNIX timestamp along with the URL")
 
 	flag.Parse()
 
-	if baseURL == "uninitialized" {
-		return nil, errors.New("Please supply the baseURL (with http/https) as a parameter. Eg: ./replay --base-url=https://website.com")
+	if len(os.Args) == 1 {
+		printError("Please supply a configuration parameter for the program")
+		flag.Usage()
+		return nil
 	}
 
-	if logFilePath == "uninitialized" {
-		return nil, errors.New("Please supply the path of the log file as a parameter. Eg: ./replay --log-file-path=/var/log/nginx/access.log")
+	if help {
+		flag.Usage()
+		return nil
+	}
+
+	if baseURL == "" {
+		printError("Please supply the baseURL (with http/https) as a parameter. Eg: ./replay --base-url=https://website.com")
+		return nil
+	}
+
+	if logFilePath == "" {
+		printError("Please supply the path of the log file as a parameter. Eg: ./replay --log-file-path=/var/log/nginx/access.log")
+		return nil
 	}
 
 	err := utils.ValidateBaseURL(baseURL)
 
 	if err != nil {
-		return nil, err
+		printError(err.Error())
+		return nil
 	}
 
 	var configObj Config
@@ -58,5 +75,9 @@ func InitializeConfig() (*Config, error) {
 	configObj.LogFilePath = logFilePath
 	configObj.IncludeTimeStamp = includeTimeStamp
 
-	return &configObj, nil
+	return &configObj
+}
+
+func printError(message string) {
+	fmt.Println(message)
 }

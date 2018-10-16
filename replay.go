@@ -3,7 +3,6 @@ package main
 import (
 	"bufio"
 	"errors"
-	"flag"
 	"fmt"
 	"log"
 	"net/http"
@@ -53,11 +52,10 @@ func getTimestampFromLogLine(logLine string) int64 {
 
 func main() {
 
-	config, err := config.InitializeConfig()
+	config := config.InitializeConfig()
 
-	if err != nil {
-		flag.Usage()
-		log.Fatal(err)
+	if config == nil {
+		os.Exit(1)
 	}
 
 	successPtr, err := os.OpenFile("succeeded.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0600)
