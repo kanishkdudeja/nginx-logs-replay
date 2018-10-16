@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"regexp"
 	"strconv"
 	"strings"
 	"time"
@@ -96,6 +97,22 @@ func main() {
 	for scanner.Scan() {
 
 		s := scanner.Text()
+
+		if config.RegexFilter != "" {
+			filterMatch, _ := regexp.MatchString(config.RegexFilter, s)
+
+			if !filterMatch {
+				continue
+			}
+		}
+
+		if config.RegexExclude != "" {
+			excludeMatch, _ := regexp.MatchString(config.RegexExclude, s)
+
+			if excludeMatch {
+				continue
+			}
+		}
 
 		firstPosParams := strings.Index(s, "GET /track")
 		firstPosParams = firstPosParams + 4
