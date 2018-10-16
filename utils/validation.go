@@ -29,10 +29,10 @@ func ValidateBaseURL(baseURL string) error {
 	return nil
 }
 
-// ValidateRegularExpression validates if the provided regular expression
+// CompileRegularExpression validates if the provided regular expression
 // is valid or not.
-func ValidateRegularExpression(regularExpression string) error {
-	_, err := regexp.Compile(regularExpression)
+func CompileRegularExpression(regularExpression string) (*regexp.Regexp, error) {
+	regexp, err := regexp.Compile(regularExpression)
 
-	return err
+	return regexp, err
 }

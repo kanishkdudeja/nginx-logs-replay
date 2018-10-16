@@ -7,7 +7,6 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"regexp"
 	"strconv"
 	"strings"
 	"time"
@@ -98,16 +97,16 @@ func main() {
 
 		s := scanner.Text()
 
-		if config.RegexFilter != "" {
-			filterMatch, _ := regexp.MatchString(config.RegexFilter, s)
+		if config.RegexFilterEnabled {
+			filterMatch := config.RegexFilter.MatchString(s)
 
 			if !filterMatch {
 				continue
 			}
 		}
 
-		if config.RegexExclude != "" {
-			excludeMatch, _ := regexp.MatchString(config.RegexExclude, s)
+		if config.RegexExcludeEnabled {
+			excludeMatch := config.RegexExclude.MatchString(s)
 
 			if excludeMatch {
 				continue

@@ -11,18 +11,21 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"regexp"
 
 	"../utils"
 )
 
 // Config Struct representing the config
 type Config struct {
-	DryRun           bool   `json:"dry_run"`
-	BaseURL          string `json:"base_url"`
-	LogFilePath      string `json:"log_file_path"`
-	RegexFilter      string `json:"regex_filter"`
-	RegexExclude     string `json:"regex_exclude"`
-	IncludeTimeStamp bool   `json:"include_time_stamp"`
+	DryRun              bool
+	BaseURL             string
+	LogFilePath         string
+	RegexFilterEnabled  bool
+	RegexFilter         *regexp.Regexp
+	RegexExcludeEnabled bool
+	RegexExclude        *regexp.Regexp
+	IncludeTimeStamp    bool
 }
 
 // InitializeConfig Returns the command line flags
@@ -74,25 +77,31 @@ func InitializeConfig() *Config {
 		return nil
 	}
 
-	err = utils.ValidateRegularExpression(regexFilter)
-
-	if err != nil {
-		printError("Encountered error in compiling regular expression passed in the --regex-filter parameter")
-		printError(err.Error())
-		return nil
-	}
-
-	err = utils.ValidateRegularExpression(regexExclude)
-
-	if err != nil {
-		printError("Encountered error in compiling regular expression passed in the --regex-exclude parameter")
-		printError(err.Error())
-		return nil
-	}
-
 	if regexFilter != "" && regexExclude != "" {
 		printError("You can only use one of the --regex-filter and --regex-exclude parameters at once.")
 		return nil
+	}
+
+	var regexpFilter, regexpExclude *regexp.Regexp
+
+	if regexFilter != "" {
+		regexpFilter, err = utils.CompileRegularExpression(regexFilter)
+
+		if err != nil {
+			printError("Encountered error in compiling regular expression passed in the --regex-filter parameter")
+			printError(err.Error())
+			return nil
+		}
+	}
+
+	if regexExclude != "" {
+		regexpExclude, err = utils.CompileRegularExpression(regexExclude)
+
+		if err != nil {
+			printError("Encountered error in compiling regular expression passed in the --regex-exclude parameter")
+			printError(err.Error())
+			return nil
+		}
 	}
 
 	var configObj Config
@@ -100,8 +109,17 @@ func InitializeConfig() *Config {
 	configObj.DryRun = dryRun
 	configObj.BaseURL = baseURL
 	configObj.LogFilePath = logFilePath
-	configObj.RegexFilter = regexFilter
-	configObj.RegexExclude = regexExclude
+
+	if regexFilter != "" {
+		configObj.RegexFilterEnabled = true
+		configObj.RegexFilter = regexpFilter
+	}
+
+	if regexExclude != "" {
+		configObj.RegexExcludeEnabled = true
+		configObj.RegexExclude = regexpExclude
+	}
+
 	configObj.IncludeTimeStamp = includeTimeStamp
 
 	return &configObj
