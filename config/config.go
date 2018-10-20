@@ -1,9 +1,9 @@
 /*
-Package config provides configuration variables
-for the application.
+Package config provides functionality related to configuration
+parameters for this program.
 
-Values of these variables depend on the environment in
-which the code is being run right now
+That includes parsing, validating and storing configuration parameters
+supplied by the user at the time of running the program
 */
 package config
 
@@ -74,7 +74,7 @@ func (config *Config) validateConfig() error {
 	err := utils.ValidateBaseURL(config.BaseURL)
 
 	if err != nil {
-		return err
+		return errors.New("Encountered error in validating --base-url parameter: " + err.Error())
 	}
 
 	if config.RegexFilterString != "" && config.RegexExcludeString != "" {
@@ -114,27 +114,31 @@ func InitializeConfig() *Config {
 
 	configObj.parseAndSetFlags()
 
+	// Print usage string if no configuration parameters are supplied
 	if flag.NFlag() == 0 {
-		printError("Please supply a configuration parameter for the program")
+		printMessage("Please supply a configuration parameter for the program")
 		flag.Usage()
 		return nil
 	}
 
+	// Print usage string if user has supplied the --help configuration parameter
 	if configObj.Help {
 		flag.Usage()
 		return nil
 	}
 
+	// Validate configuration
 	err := configObj.validateConfig()
 
+	// Show error if validation of configuration parameters failed
 	if err != nil {
-		printError(err.Error())
+		printMessage(err.Error())
 		return nil
 	}
 
 	return &configObj
 }
 
-func printError(message string) {
+func printMessage(message string) {
 	fmt.Println(message)
 }
