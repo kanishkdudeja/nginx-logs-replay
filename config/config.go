@@ -31,7 +31,7 @@ type Config struct {
 	IncludeTimeStamp    bool
 }
 
-var configObj Config
+var configuration Config
 
 func (config *Config) parseAndSetFlags() {
 	var help bool
@@ -112,7 +112,7 @@ func (config *Config) validateConfig() error {
 // and calls the config package to load up the configuration
 func InitializeConfig() *Config {
 
-	configObj.parseAndSetFlags()
+	configuration.parseAndSetFlags()
 
 	// Print usage string if no configuration parameters are supplied
 	if flag.NFlag() == 0 {
@@ -122,13 +122,13 @@ func InitializeConfig() *Config {
 	}
 
 	// Print usage string if user has supplied the --help configuration parameter
-	if configObj.Help {
+	if configuration.Help {
 		flag.Usage()
 		return nil
 	}
 
 	// Validate configuration
-	err := configObj.validateConfig()
+	err := configuration.validateConfig()
 
 	// Show error if validation of configuration parameters failed
 	if err != nil {
@@ -136,7 +136,7 @@ func InitializeConfig() *Config {
 		return nil
 	}
 
-	return &configObj
+	return &configuration
 }
 
 func printMessage(message string) {
