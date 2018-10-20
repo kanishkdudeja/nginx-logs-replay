@@ -11,7 +11,6 @@ import (
 	"errors"
 	"flag"
 	"fmt"
-	"os"
 	"regexp"
 
 	"../utils"
@@ -63,37 +62,23 @@ func (config *Config) parseAndSetFlags() {
 }
 
 func (config *Config) validateConfig() error {
-	if len(os.Args) == 1 {
-		printError("Please supply a configuration parameter for the program")
-		flag.Usage()
-		return errors.New("no-config-parameters-supplied")
-	}
-
-	if config.Help {
-		flag.Usage()
-		return errors.New("help-required")
-	}
 
 	if config.BaseURL == "" {
-		printError("Please supply the baseURL (with http/https) as a parameter. Eg: ./replay --base-url=https://website.com")
-		return errors.New("base-url-not-supplied")
+		return errors.New("Please supply the baseURL (with http/https) as a parameter. Eg: ./replay --base-url=https://website.com")
 	}
 
 	if config.LogFilePath == "" {
-		printError("Please supply the path of the log file as a parameter. Eg: ./replay --log-file-path=/var/log/nginx/access.log")
-		return errors.New("log-file-path-not-supplied")
+		return errors.New("Please supply the path of the log file as a parameter. Eg: ./replay --log-file-path=/var/log/nginx/access.log")
 	}
 
 	err := utils.ValidateBaseURL(config.BaseURL)
 
 	if err != nil {
-		printError(err.Error())
 		return err
 	}
 
 	if config.RegexFilterString != "" && config.RegexExcludeString != "" {
-		printError("You can only use one of the --regex-filter and --regex-exclude parameters at once.")
-		return errors.New("attempts-to-use-both-regex-options-at-once")
+		return errors.New("You can only use one of the --regex-filter and --regex-exclude parameters at once")
 	}
 
 	var regexpFilter, regexpExclude *regexp.Regexp
@@ -102,9 +87,7 @@ func (config *Config) validateConfig() error {
 		regexpFilter, err = utils.CompileRegularExpression(config.RegexFilterString)
 
 		if err != nil {
-			printError("Encountered error in compiling regular expression passed in the --regex-filter parameter")
-			printError(err.Error())
-			return errors.New("error-in-compiling-regex-filter-expression")
+			return errors.New("Encountered error in compiling regular expression passed in the --regex-filter parameter: " + err.Error())
 		}
 
 		config.RegexFilterEnabled = true
@@ -115,9 +98,7 @@ func (config *Config) validateConfig() error {
 		regexpExclude, err = utils.CompileRegularExpression(config.RegexExcludeString)
 
 		if err != nil {
-			printError("Encountered error in compiling regular expression passed in the --regex-exclude parameter")
-			printError(err.Error())
-			return errors.New("error-in-compiling-regex-exclude-expression")
+			return errors.New("Encountered error in compiling regular expression passed in the --regex-exclude parameter: " + err.Error())
 		}
 
 		config.RegexExcludeEnabled = true
@@ -132,9 +113,22 @@ func (config *Config) validateConfig() error {
 func InitializeConfig() *Config {
 
 	configObj.parseAndSetFlags()
+
+	if flag.NFlag() == 0 {
+		printError("Please supply a configuration parameter for the program")
+		flag.Usage()
+		return nil
+	}
+
+	if configObj.Help {
+		flag.Usage()
+		return nil
+	}
+
 	err := configObj.validateConfig()
 
 	if err != nil {
+		printError(err.Error())
 		return nil
 	}
 
