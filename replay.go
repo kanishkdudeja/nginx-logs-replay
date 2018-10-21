@@ -97,6 +97,22 @@ func main() {
 
 		s := scanner.Text()
 
+		if config.RegexFilterEnabled {
+			filterMatch := config.RegexFilter.MatchString(s)
+
+			if !filterMatch {
+				continue
+			}
+		}
+
+		if config.RegexExcludeEnabled {
+			excludeMatch := config.RegexExclude.MatchString(s)
+
+			if excludeMatch {
+				continue
+			}
+		}
+
 		firstPosParams := strings.Index(s, "GET /track")
 		firstPosParams = firstPosParams + 4
 
